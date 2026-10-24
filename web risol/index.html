@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Koeweh - Traditional Snacks</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1 style="margin:0">Koeweh</h1>
+    <small>A Little Taste of Happiness</small>
+  </header>
+
+  <main>
+    <h2>Our Menu</h2>
+    <div class="grid" id="daftarMenu"></div>
+
+    <h2>Keranjang</h2>
+    <div class="wrap">
+      <table>
+        <thead>
+          <tr><th>Menu</th><th>Jenis</th><th>Harga</th><th>Jumlah</th><th>Subtotal</th><th>Aksi</th></tr>
+        </thead>
+        <tbody id="tabelKeranjang"></tbody>
+      </table>
+    </div>
+    <p class="total">Total: <span id="totalHarga">Rp 0</span></p>
+
+    <h2>Data Pembeli</h2>
+    <input type="text" id="nama" placeholder="Nama pembeli">
+    <input type="number" id="bayar" placeholder="Uang yang dibayarkan (Rp)">
+    <button onclick="bayarSekarang()">Bayar</button>
+    <p id="pesan"></p>
+
+    <h2>Riwayat Transaksi</h2>
+    <div class="wrap">
+      <table>
+        <thead>
+          <tr><th>Waktu</th><th>Pembeli</th><th>Pesanan</th><th>Total</th><th>Kembalian</th></tr>
+        </thead>
+        <tbody id="tabelRiwayat">
+          <tr><td colspan="5">Belum ada transaksi.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // ===== DATA MENU =====
+    // foto  : nama file di folder "foto" (sebelah index.html)
+    // hargaFrozen = harga mentah/beku, hargaGoreng = harga sudah digoreng
+    var menu = [
+      { id: 1, nama: "Risol Sosis", foto: "foto/risol-mayo.jpg",
+        deskripsi: "Risol renyah dengan isian sosis yang gurih dan lezat dengan mayones yang menciptakan rasa manis sehingga rasa balance [dapat ditambah saos jika suka]. harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 30000, hargaGoreng: 35000, stok: 20 },
+      { id: 2, nama: "Risol Ragout", foto: "foto/risol-ragout.jpg",
+        deskripsi: "Kulit risol yang lembut dan renyah di luar, berisi ragout creamy dengan perpaduan ayam dan sayuran yang gurih. Setiap gigitan menghadirkan rasa lembut, lezat, dan bikin nagih! harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 25000, hargaGoreng: 30000, stok: 15 },
+      { id: 3, nama: "Risol Blackpaper", foto: "foto/risol-Blackpaper.jpg",
+        deskripsi: "Sensasi risol gurih dengan isian bercita rasa lada hitam yang khas. Aromanya menggoda, rasanya kaya rempah dengan sentuhan pedas hangat, dibalut kulit renyah yang bikin susah berhenti ngemil. harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 25000, hargaGoreng: 30000, stok: 25 } ,
+         { id: 4, nama: "Risol Geprek", foto: "foto/risol-mayo.jpg",
+        deskripsi: "Buat pencinta pedas, risol geprek hadir dengan isian bercita rasa ayam geprek yang gurih dan pedas menggigit. Kulitnya renyah dengan sensasi pedas yang menggugah selera di setiap gigitan!. harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 30000, hargaGoreng: 35000, stok: 20 },
+      { id: 5, nama: "Risol Bolognese", foto: "foto/risol-ragout.jpg",
+        deskripsi: "Perpaduan kulit risol renyah dengan isian saus bolognese bercita rasa tomat dan daging yang gurih. Rasanya kaya, sedikit asam segar, dan menghadirkan sensasi ala Italia dalam setiap gigitan! harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 30000, hargaGoreng: 35000, stok: 15 },
+      { id: 6, nama: "Curry puff", foto: "foto/risol-Blackpaper.jpg",
+        deskripsi: " Pastry berlapis dengan kulit renyah dan isian kari berbumbu yang kaya rasa. Perpaduan rempah aromatik dan isian gurih menjadikan camilan ini nikmat disantap selagi hangat. harga tertera untuk 1 pack isi 10pcs.",
+        hargaFrozen: 30000, hargaGoreng: 35000, stok: 25 }
+    ];
+
+    var keranjang = []; // isi: { id, jenis, jumlah }
+    var riwayat = [];
+
+    function rp(angka) { return "Rp " + angka.toLocaleString("id-ID"); }
+    function cariMenu(id) { return menu.find(function (m) { return m.id === id; }); }
+    function hargaItem(m, jenis) { return jenis === "frozen" ? m.hargaFrozen : m.hargaGoreng; }
+    function namaJenis(jenis) { return jenis === "frozen" ? "Frozen" : "Goreng"; }
+
+    // ===== TAMPILKAN MENU (kartu dengan foto) =====
+    function tampilMenu() {
+      var html = "";
+      menu.forEach(function (m) {
+        html += "<div class='kartu'>" +
+          "<img src='" + m.foto + "' alt='" + m.nama + "' onerror=\"this.alt='Foto belum ada'\">" +
+          "<div class='isi'><h3>" + m.nama + "</h3><p>" + m.deskripsi + "</p>" +
+          "<select id='jenis" + m.id + "'>" +
+          "<option value='frozen'>Frozen - " + rp(m.hargaFrozen) + "</option>" +
+          "<option value='goreng'>Sudah digoreng - " + rp(m.hargaGoreng) + "</option></select>" +
+          "<p>Stok: " + m.stok + "</p>" +
+          "<button onclick='tambah(" + m.id + ")'>Tambah ke keranjang</button></div></div>";
+      });
+      document.getElementById("daftarMenu").innerHTML = html;
+    }
+
+    // ===== KERANJANG =====
+    function jumlahMenuDiKeranjang(id) {
+      var n = 0;
+      keranjang.forEach(function (k) { if (k.id === id) n += k.jumlah; });
+      return n;
+    }
+
+    function tambah(id) {
+      var m = cariMenu(id);
+      var jenis = document.getElementById("jenis" + id).value;
+      if (jumlahMenuDiKeranjang(id) >= m.stok) { alert("Stok " + m.nama + " tidak cukup."); return; }
+      var item = keranjang.find(function (k) { return k.id === id && k.jenis === jenis; });
+      if (item) { item.jumlah++; } else { keranjang.push({ id: id, jenis: jenis, jumlah: 1 }); }
+      tampilKeranjang();
+    }
+
+    function kurang(id, jenis) {
+      var item = keranjang.find(function (k) { return k.id === id && k.jenis === jenis; });
+      item.jumlah--;
+      if (item.jumlah === 0) {
+        keranjang = keranjang.filter(function (k) { return k !== item; });
+      }
+      tampilKeranjang();
+    }
+
+    function hitungTotal() {
+      var total = 0;
+      keranjang.forEach(function (k) { total += hargaItem(cariMenu(k.id), k.jenis) * k.jumlah; });
+      return total;
+    }
+
+    function tampilKeranjang() {
+      var html = keranjang.length === 0 ? "<tr><td colspan='6'>Keranjang masih kosong.</td></tr>" : "";
+      keranjang.forEach(function (k) {
+        var m = cariMenu(k.id);
+        var h = hargaItem(m, k.jenis);
+        html += "<tr><td>" + m.nama + "</td><td>" + namaJenis(k.jenis) + "</td><td>" + rp(h) +
+                "</td><td>" + k.jumlah + "</td><td>" + rp(h * k.jumlah) + "</td>" +
+                "<td><button class='abu' onclick=\"kurang(" + k.id + ",'" + k.jenis + "')\">Kurangi</button></td></tr>";
+      });
+      document.getElementById("tabelKeranjang").innerHTML = html;
+      document.getElementById("totalHarga").innerText = rp(hitungTotal());
+    }
+
+    // ===== PEMBAYARAN =====
+    function bayarSekarang() {
+      var nama = document.getElementById("nama").value.trim();
+      var bayar = Number(document.getElementById("bayar").value);
+      var total = hitungTotal();
+      var pesan = document.getElementById("pesan");
+
+      if (keranjang.length === 0) { pesan.innerText = "Keranjang masih kosong."; return; }
+      if (nama === "") { pesan.innerText = "Isi nama pembeli dulu."; return; }
+      if (bayar < total) { pesan.innerText = "Uang kurang " + rp(total - bayar) + "."; return; }
+
+      var daftarPesanan = [];
+      keranjang.forEach(function (k) {
+        var m = cariMenu(k.id);
+        m.stok -= k.jumlah;
+        daftarPesanan.push(m.nama + " (" + namaJenis(k.jenis) + ") x" + k.jumlah);
+      });
+
+      riwayat.push({
+        waktu: new Date().toLocaleString("id-ID"), nama: nama,
+        pesanan: daftarPesanan.join(", "), total: total, kembali: bayar - total
+      });
+
+      pesan.innerText = "Transaksi berhasil. Kembalian: " + rp(bayar - total);
+      keranjang = [];
+      document.getElementById("nama").value = "";
+      document.getElementById("bayar").value = "";
+      tampilMenu(); tampilKeranjang(); tampilRiwayat();
+    }
+
+    function tampilRiwayat() {
+      var html = "";
+      riwayat.forEach(function (r) {
+        html += "<tr><td>" + r.waktu + "</td><td>" + r.nama + "</td><td>" + r.pesanan +
+                "</td><td>" + rp(r.total) + "</td><td>" + rp(r.kembali) + "</td></tr>";
+      });
+      document.getElementById("tabelRiwayat").innerHTML = html;
+    }
+
+    tampilMenu();
+    tampilKeranjang();
+  </script>
+</body>
+</html>

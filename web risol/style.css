@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+:root {
+  --bg: hsl(22, 79%, 85%);
+  --ink: #0f0c0b;
+  --orange: #d34b1d;
+  --gelap: #bd5d31;
+  --emas: #e9a820;
+  --garis: #d5ddd0;
+  --putih: #ffffff;
+  --abu: #cb9a7b;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  line-height: 1.2;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: var(--gelap);
+  color: #fff;
+  padding: 22px 20px;
+  border-bottom: 4px solid var(--emas);
+}
+header h1 { margin: 0; font-size: 2.2rem; }
+header small { display: block; opacity: .85; }
+
+/* ===== ISI HALAMAN ===== */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+h2 { margin: 32px 0 14px; font-size: 1.6rem; color: var(--gelap); }
+
+/* ===== KARTU MENU ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+}
+.kartu {
+  background: var(--putih);
+  border: 1px solid var(--garis);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s;
+}
+.kartu:hover { box-shadow: 0 6px 18px rgba(27, 67, 50, .15); }
+
+.kartu img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  background: #cfe0d3;   /* warna kotak kalau foto belum ada */
+  color: var(--abu);
+  font-size: .9rem;
+}
+.isi {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.isi h3 { margin: 0; font-size: 1.2rem; }
+.isi p { margin: 0; font-size: .9rem; color: var(--abu); }
+.isi p:nth-of-type(1) { flex: 1; }   /* deskripsi mengisi ruang, tombol selalu di bawah */
+
+/* ===== FORM, DROPDOWN, TOMBOL ===== */
+select, input {
+  width: 100%;
+  padding: 10px;
+  border: 1.5px solid var(--garis);
+  border-radius: 10px;
+  font: inherit;
+  background: #fff;
+  margin-bottom: 8px;
+}
+.isi select { margin-bottom: 0; }
+select:focus, input:focus {
+  outline: 2px solid var(--emas);
+  outline-offset: 1px;
+  border-color: var(--orange);
+}
+
+button {
+  font: inherit;
+  background: var(--orange);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+button:hover { background: var(--gelap); }
+button.abu { background: #6b7a71; padding: 6px 10px; }
+button.abu:hover { background: #4d5d54; }
+
+/* ===== TABEL ===== */
+.wrap {
+  overflow-x: auto;
+  background: var(--putih);
+  border: 1px solid var(--garis);
+  border-radius: 14px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td {
+  padding: 11px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--garis);
+  font-size: .92rem;
+}
+th { background: #e3ebe0; color: var(--gelap); }
+tr:last-child td { border-bottom: 0; }
+
+/* ===== TOTAL & PESAN ===== */
+.total {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 16px 0;
+  color: var(--gelap);
+}
+#pesan { font-weight: 500; margin-top: 10px; }
+
+/* ===== HP ===== */
+@media (max-width: 600px) {
+  header h1 { font-size: 1.8rem; }
+  .grid { grid-template-columns: 1fr; }
+}
